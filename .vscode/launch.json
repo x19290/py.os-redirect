@@ -8,7 +8,7 @@
             "name": "redirectdemo.py",
             "type": "python",
             "request": "launch",
-            "name": "redirectdemo.py",
+            "program": "redirectdemo.py",
             "justMyCode": false,
             "console": "integratedTerminal"
         },
