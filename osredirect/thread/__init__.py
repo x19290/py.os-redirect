@@ -13,6 +13,7 @@ class ThreadTuple(tuple):
 class ConcurrentReader(ThreadTuple):
     @staticmethod
     def contents(fds, oobjs):
+        from io import DEFAULT_BUFFER_SIZE
         from os import read
         from threading import Thread
 
@@ -29,7 +30,7 @@ class ConcurrentReader(ThreadTuple):
 
         def pump(fd, oobj):
             while True:
-                water = read(fd, 8192)
+                water = read(fd, DEFAULT_BUFFER_SIZE)
                 if not water:
                     break
                 oobj.write(adapt(water))
