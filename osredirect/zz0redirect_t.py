@@ -51,7 +51,7 @@ class _Test:
         self._test(w1w2, _BOTH, r'1 2 ', BytesIO(), BytesIO(), BytesIO())
 
 
-class T0(_Test, TestCase):
+class T0bin(_Test, TestCase):
     @staticmethod
     def adapt(s):
         return s.encode(r'UTF-8')
