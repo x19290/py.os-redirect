@@ -12,6 +12,7 @@
         "contextlib",
         "fdbits",
         "memio",
+        "nmems",
         "oobj",
         "oobjs",
         "osredirect",
