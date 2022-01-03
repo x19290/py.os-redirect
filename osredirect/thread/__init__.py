@@ -26,7 +26,8 @@ class ConcurrentReader(ThreadTuple):
                 return b
         else:
             def adapt(b):
-                return b.decode(r'UTF-8')  # TODO: use faster way
+                from ..codecs.utf8 import utf8decode
+                return utf8decode(b)
 
         def pump(fd, oobj):
             while True:
