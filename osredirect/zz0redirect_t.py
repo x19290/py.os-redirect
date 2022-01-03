@@ -8,53 +8,48 @@ _BOTH = STDOUT_BIT | STDERR_BIT
 
 
 class _Test:
-    def _test(self, exec, fdbits, expected, *mems):
+    def _test(self, exec, fdbits, expected, nmems):
         expected, sep = map(self.adapt, (expected, r' '))
+        mems = tuple(self.memio() for _ in range(nmems))
         redirect(exec, fdbits, *mems)
         actual = sep.join(y.getvalue() for y in mems)
         eq_(expected, actual)
 
     def test00(self):
-        self._test(w1, STDOUT_BIT, r'')
+        self._test(w1, STDOUT_BIT, r'', 0)
 
     def test01(self):
-        self._test(w1, STDOUT_BIT, r'1', self.memio())
+        self._test(w1, STDOUT_BIT, r'1', 1)
 
     def test02(self):
-        memio = self.memio
-        self._test(w1, STDOUT_BIT, r'1 ', memio(), memio())
+        self._test(w1, STDOUT_BIT, r'1 ', 2)
 
     def test03(self):
-        memio = self.memio
-        self._test(w1, STDOUT_BIT, r'1  ', memio(), memio(), memio())
+        self._test(w1, STDOUT_BIT, r'1  ', 3)
 
     def test10(self):
-        self._test(w2, STDERR_BIT, r'')
+        self._test(w2, STDERR_BIT, r'', 0)
 
     def test11(self):
-        self._test(w2, STDERR_BIT, r'2', self.memio())
+        self._test(w2, STDERR_BIT, r'2', 1)
 
     def test12(self):
-        memio = self.memio
-        self._test(w2, STDERR_BIT, r'2 ', memio(), memio())
+        self._test(w2, STDERR_BIT, r'2 ', 2)
 
     def test13(self):
-        memio = self.memio
-        self._test(w2, STDERR_BIT, r'2  ', memio(), memio(), memio())
+        self._test(w2, STDERR_BIT, r'2  ', 3)
 
     def test20(self):
-        self._test(w1w2, _BOTH, r'')
+        self._test(w1w2, _BOTH, r'', 0)
 
     def test21(self):
-        self._test(w1w2, _BOTH, r'1', self.memio())
+        self._test(w1w2, _BOTH, r'1', 1)
 
     def test22(self):
-        memio = self.memio
-        self._test(w1w2, _BOTH, r'1 2', memio(), memio())
+        self._test(w1w2, _BOTH, r'1 2', 2)
 
     def test23(self):
-        memio = self.memio
-        self._test(w1w2, _BOTH, r'1 2 ', memio(), memio(), memio())
+        self._test(w1w2, _BOTH, r'1 2 ', 3)
 
 
 class T0bin(_Test, TestCase):
