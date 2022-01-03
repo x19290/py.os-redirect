@@ -57,6 +57,12 @@ class T0bin(_Test, TestCase):
         return s.encode(r'UTF-8')
 
 
+class T1str(_Test, TestCase):
+    @staticmethod
+    def adapt(s):
+        return s
+
+
 def w1():
     write(STDOUT, br'1')
 
