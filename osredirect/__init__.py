@@ -1,17 +1,6 @@
 STDOUT_BIT, STDERR_BIT = 1, 2
 STDOUT, STDERR = 1, 2
 
-class _NullOut:
-    @staticmethod
-    def close():
-        pass
-    @staticmethod
-    def write(data):
-        return data.__len__()
-
-
-NULL_OUT = _NullOut()
-
 
 def redirect(exec, fdbits: int, *oobjs):
     from .thread import ConcurrentReader
@@ -42,3 +31,15 @@ def redirect(exec, fdbits: int, *oobjs):
 
     ConcurrentReader(fds(), oobjs).join()
     wait()
+
+
+class _NullOut:
+    @staticmethod
+    def close():
+        pass
+    @staticmethod
+    def write(data):
+        return data.__len__()
+
+
+NULL_OUT = _NullOut()
