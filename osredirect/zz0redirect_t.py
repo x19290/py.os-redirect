@@ -1,4 +1,4 @@
-from . import Redirect, STDERR_BIT, STDERR, STDOUT, STDOUT_BIT
+from . import redirect, STDERR_BIT, STDERR, STDOUT, STDOUT_BIT
 from io import BytesIO, StringIO
 from os import write
 from nose.tools import eq_
@@ -8,53 +8,30 @@ _BOTH = STDOUT_BIT | STDERR_BIT
 
 
 class _Test:
-    def _test(self, exec, fdbits, expected, nmems):
-        expected, sep = map(self.adapt, (expected, r' '))
-        mems = tuple(self.memio() for _ in range(nmems))
-        with Redirect(fdbits, *mems) as r:
-            if r.child:
-                exec()
-        actual = sep.join(y.getvalue() for y in mems)
+    def _test(self, n):
+        expected, isep, osep = map(self.adapt, (self.expected, r',', r' '))
+        expected = expected.split(isep)[n]
+        mems = tuple(self.memio() for _ in range(n))
+        with redirect(self.fdbits, *mems) as child:
+            if child:
+                self.exec()
+        actual = osep.join(y.getvalue() for y in mems)
         eq_(expected, actual)
 
-    def test00(self):
-        self._test(w1, STDOUT_BIT, r'', 0)
+    def test0(self):
+        self._test(0)
 
-    def test01(self):
-        self._test(w1, STDOUT_BIT, r'1', 1)
+    def test1(self):
+        self._test(1)
 
-    def test02(self):
-        self._test(w1, STDOUT_BIT, r'1 ', 2)
+    def test2(self):
+        self._test(2)
 
-    def test03(self):
-        self._test(w1, STDOUT_BIT, r'1  ', 3)
-
-    def test10(self):
-        self._test(w2, STDERR_BIT, r'', 0)
-
-    def test11(self):
-        self._test(w2, STDERR_BIT, r'2', 1)
-
-    def test12(self):
-        self._test(w2, STDERR_BIT, r'2 ', 2)
-
-    def test13(self):
-        self._test(w2, STDERR_BIT, r'2  ', 3)
-
-    def test20(self):
-        self._test(w1w2, _BOTH, r'', 0)
-
-    def test21(self):
-        self._test(w1w2, _BOTH, r'1', 1)
-
-    def test22(self):
-        self._test(w1w2, _BOTH, r'1 2', 2)
-
-    def test23(self):
-        self._test(w1w2, _BOTH, r'1 2 ', 3)
+    def test3(self):
+        self._test(3)
 
 
-class T0bin(_Test, TestCase):
+class _0bin(_Test):
     memio = BytesIO
 
     @staticmethod
@@ -62,7 +39,7 @@ class T0bin(_Test, TestCase):
         return s.encode(r'UTF-8')
 
 
-class T1str(_Test, TestCase):
+class _1str(_Test):
     memio = StringIO
 
     @staticmethod
@@ -70,14 +47,53 @@ class T1str(_Test, TestCase):
         return s
 
 
-def w1():
-    write(STDOUT, br'1')
+class _0w1:
+    expected = r',1,1 ,1  '
+    fdbits = STDOUT_BIT
+
+    @classmethod
+    def exec(cls):
+        write(STDOUT, br'1')
 
 
-def w2():
-    write(STDERR, br'2')
+class _1w2:
+    expected = r',2,2 ,2  '
+    fdbits = STDERR_BIT
+
+    @classmethod
+    def exec(cls):
+        write(STDERR, br'2')
 
 
-def w1w2():
-    w1()
-    w2()
+class _2w1w2:
+    expected = r',1,1 2,1 2 '
+    fdbits = STDOUT_BIT | STDERR_BIT
+
+    @classmethod
+    def exec(cls):
+        write(STDOUT, br'1')
+        write(STDERR, br'2')
+
+
+class T0bin0w1(_0bin, _0w1, TestCase):
+    pass
+
+
+class T0bin1w2(_0bin, _1w2, TestCase):
+    pass
+
+
+class T0bin2w1w2(_0bin, _2w1w2, TestCase):
+    pass
+
+
+class T1str0w1(_1str, _0w1, TestCase):
+    pass
+
+
+class T1str1w2(_1str, _1w2, TestCase):
+    pass
+
+
+class T1str2w1w2(_1str, _2w1w2, TestCase):
+    pass
