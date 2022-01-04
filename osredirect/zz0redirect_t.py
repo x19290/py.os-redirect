@@ -1,4 +1,4 @@
-from . import redirect, STDERR_BIT, STDERR, STDOUT, STDOUT_BIT
+from . import Redirect, STDERR_BIT, STDERR, STDOUT, STDOUT_BIT
 from io import BytesIO, StringIO
 from os import write
 from nose.tools import eq_
@@ -11,7 +11,9 @@ class _Test:
     def _test(self, exec, fdbits, expected, nmems):
         expected, sep = map(self.adapt, (expected, r' '))
         mems = tuple(self.memio() for _ in range(nmems))
-        redirect(exec, fdbits, *mems)
+        with Redirect(fdbits, *mems) as r:
+            if r.child:
+                exec()
         actual = sep.join(y.getvalue() for y in mems)
         eq_(expected, actual)
 
