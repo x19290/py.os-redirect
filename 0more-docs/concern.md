@@ -8,6 +8,6 @@ Under certain conditions, you can see the following strange report from vscode u
 
 The conditions are:
 - on my 4-core Mac
-- if you want to "debug all tests"
+- when "Debug All Tests"
 
 I suspect this phenomenon is due to vscode, not my program.
