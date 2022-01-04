@@ -24,3 +24,7 @@ It also is thread-safe.
   ConcurrentReader() watches multiple input (`fds`) and pumps them to `oobjs`.
 
   ThreadTuple is abstracted from ConcurrentReader.
+
+## More docs
+
+- [concern.md](0more-docs/concern.md)
