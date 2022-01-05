@@ -1,10 +1,8 @@
 from .zz import (
-    ConcurrentReader, ThreadTuple,
+    ConcurrentReader, ThreadTuple, Thread,
     BytesIO, StringIO,
     close, pipe, write,
-    eq_,
-    Thread,
-    TestCase,
+    eq_, TestCase,
 )
 
 

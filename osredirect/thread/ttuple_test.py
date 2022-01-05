@@ -1,9 +1,7 @@
 from .zz import (
-    ThreadTuple,
+    ThreadTuple, Thread,
     close, pipe, read, write,
-    eq_,
-    Thread,
-    TestCase,
+    eq_, TestCase,
 )
 
 class T0ThreadTuple(TestCase):
