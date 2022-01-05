@@ -15,6 +15,7 @@
         "iswriter",
         "memio",
         "nmems",
+        "nullio",
         "oobj",
         "oobjs",
         "osredirect",
