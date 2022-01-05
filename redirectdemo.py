@@ -8,7 +8,7 @@ def main():
 
     with StringIO() as b:
         with Redirect(STDOUT_BIT, b) as r:
-            if r.child:
+            if r.iswriter:
                 write(1, br'abcd')
         print(b.getvalue().upper())
 

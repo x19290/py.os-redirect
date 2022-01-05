@@ -8,7 +8,7 @@ STDOUT, STDERR = 1, 2
 def redirect(fdbits: int, *oobjs):
     try:
         r = Redirect(fdbits, *oobjs).__enter__()
-        yield r.child
+        yield r.iswriter
     finally:
         r.__exit__()
 
@@ -33,7 +33,7 @@ class Redirect(dict):
         from .thread import ConcurrentReader
         from os import close, wait, _exit
 
-        if self.child:
+        if self.iswriter:
             _exit(0)
 
         def fds():
@@ -47,8 +47,8 @@ class Redirect(dict):
     def __enter__(self):
         from os import close, dup2, fork
 
-        self.child = child = fork() == 0
-        if child:
+        self.iswriter = iswriter = fork() == 0
+        if iswriter:
             for y, (r, w) in self.items():
                 dup2(w, y)
                 close(w)

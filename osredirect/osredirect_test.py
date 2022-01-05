@@ -12,8 +12,8 @@ class _Test:
         expected, isep, osep = map(self.adapt, (self.expected, r',', r' '))
         expected = expected.split(isep)[n]
         mems = tuple(self.memio() for _ in range(n))
-        with redirect(self.fdbits, *mems) as child:
-            if child:
+        with redirect(self.fdbits, *mems) as iswriter:
+            if iswriter:
                 self.exec()
         actual = osep.join(y.getvalue() for y in mems)
         eq_(expected, actual)
