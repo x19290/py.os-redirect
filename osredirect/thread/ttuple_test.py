@@ -13,7 +13,7 @@ class T0(TestCase):
 
         class ProdCons(ThreadTuple):
             @staticmethod
-            def contents():
+            def threads():
                 def prod():
                     for y in feed:
                         write(w, br'%c' % y)

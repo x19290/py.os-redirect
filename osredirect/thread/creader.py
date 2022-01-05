@@ -3,7 +3,7 @@ from .ttuple import ThreadTuple
 
 class ConcurrentReader(ThreadTuple):
     @staticmethod
-    def contents(fds, oobjs):
+    def threads(fds, oobjs):
         from io import DEFAULT_BUFFER_SIZE
         from os import read
         from threading import Thread

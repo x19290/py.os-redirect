@@ -21,7 +21,7 @@ class _Test:
 
         class Writers(ThreadTuple):
             @staticmethod
-            def contents():
+            def threads():
                 def writeloop(ofd, c):
                     for _ in range(times):
                         write(ofd, getbytes(c))
