@@ -4,7 +4,7 @@ from .zz import (
     eq_, TestCase,
 )
 
-class T0ThreadTuple(TestCase):
+class T0(TestCase):
     def test0(self):
         r, w = pipe()
         actual = []

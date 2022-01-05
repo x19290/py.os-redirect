@@ -6,7 +6,7 @@ from .zz import (
 )
 
 
-class _1:
+class _Test:
     @classmethod
     def setUpClass(cls):
         io = cls.io
@@ -41,7 +41,7 @@ class _1:
         eq_(expected, actual)
 
 
-class T1ConcurrentReader0bytes(_1, TestCase):
+class T0bytes(_Test, TestCase):
     io = BytesIO
     ab = br'ab'
 
@@ -50,7 +50,7 @@ class T1ConcurrentReader0bytes(_1, TestCase):
         return bytes((b,))
 
 
-class T1ConcurrentReader1str(_1, TestCase):
+class T1str(_Test, TestCase):
     io = StringIO
     ab = r'ab'
 
