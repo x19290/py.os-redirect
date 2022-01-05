@@ -3,6 +3,16 @@ def _known():
 
     return set(y for y in dir(BytesIO) if not y.startswith(r'_'))
 
+class _NullOut:
+    @staticmethod
+    def _nop(*_, **__):
+        pass
+
+    close = flush = write = _nop
+
+
+NULL_OUT = _NullOut()
+
 
 class _Null:
     known = _known()

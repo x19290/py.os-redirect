@@ -15,6 +15,7 @@ def redirect(fdbits: int, *oobjs):
 
 class Redirect(dict):
     def __init__(self, fdbits: int, *oobjs):
+        from .null.nullio import NULL_OUT
         from os import pipe
 
         def fds():
@@ -54,15 +55,3 @@ class Redirect(dict):
 
         ConcurrentReader(fds(), self.oobjs).join()
         wait()
-
-
-class _NullOut:
-    @staticmethod
-    def close():
-        pass
-    @staticmethod
-    def write(data):
-        return data.__len__()
-
-
-NULL_OUT = _NullOut()
