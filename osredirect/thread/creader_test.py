@@ -1,4 +1,4 @@
-from .zztest import (
+from .zz import (
     ConcurrentReader, ThreadTuple,
     BytesIO, StringIO,
     close, pipe, write,

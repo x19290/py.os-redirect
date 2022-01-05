@@ -1,4 +1,4 @@
-from .zztest import (
+from .zz import (
     ThreadTuple,
     close, pipe, read, write,
     eq_,
