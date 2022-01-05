@@ -28,6 +28,17 @@ class Redirect(dict):
         oobjs += (NULL_OUT,) * (fds.__len__() - oobjs.__len__())
         self.oobjs = oobjs
         super().__init__({y: pipe() for y in fds})
+
+    def __enter__(self):
+        from os import close, dup2, fork
+
+        self.iswriter = iswriter = fork() == 0
+        if iswriter:
+            for y, (r, w) in self.items():
+                dup2(w, y)
+                close(w)
+                close(r)
+        return self
  
     def __exit__(self, *_, **__):
         from .thread import ConcurrentReader
@@ -43,17 +54,6 @@ class Redirect(dict):
 
         ConcurrentReader(fds(), self.oobjs).join()
         wait()
-
-    def __enter__(self):
-        from os import close, dup2, fork
-
-        self.iswriter = iswriter = fork() == 0
-        if iswriter:
-            for y, (r, w) in self.items():
-                dup2(w, y)
-                close(w)
-                close(r)
-        return self
 
 
 class _NullOut:
