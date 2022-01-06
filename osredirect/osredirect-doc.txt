@@ -1,0 +1,49 @@
+## stdin only
+writer (child):
+	A dup2(r0, 0)
+	B
+	C close([rw]0)
+	D PUMP(0, 1)
+reader:
+	feed:
+		E close(r0)
+		F
+		G write(w0, data)
+		H close(w0)
+		[]
+	# no pump
+
+## stdin, 1or2
+writer (child):
+	A dup2(r0, 0)
+	B dup2(w1, 1or2)
+	C close([rw][01])
+	D PUMP(0, 1or2)
+reader:
+	feed:
+		E close(r0)
+		F close(w1)
+		G write(w0, data)
+		H close(w0)
+		[r1]
+	I pump(r1, o0)
+	J close(r1)
+
+## stdin, 1, 2
+writer (child):
+	A dup2(r0, 0)
+	B dup2(w1, 1)
+	B dup2(w2, 2)
+	C close([rw][012]
+	D PUMP(0, 1or2)
+	D PUMP(data, 2or1)
+reader:
+	feed:
+		E close(r0)
+		F close(w[12])
+		G write(w0, data)
+		H close(w0)
+		[r1, r2]
+	I pump(r1, o0)
+	I pump(r2, o1)
+	J close(r[12])

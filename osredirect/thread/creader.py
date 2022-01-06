@@ -3,7 +3,7 @@ from .ttuple import ThreadTuple
 
 class ConcurrentReader(ThreadTuple):
     @staticmethod
-    def threads(fds, oobjs):
+    def threads(fds, oobjs, stdin=None):
         from io import DEFAULT_BUFFER_SIZE
         from os import read
         from threading import Thread
@@ -26,6 +26,14 @@ class ConcurrentReader(ThreadTuple):
                 if not water:
                     break
                 oobj.write(adapt(water))
+
+        if stdin:
+            from os import write
+            w = fds.__next__()
+            def feed():
+                for data in stdin:
+                    write(w, data)
+            yield Thread(target=feed)
 
         for fd, oobj in zip(fds, oobjs):
             yield Thread(target=pump, args=(fd, oobj))

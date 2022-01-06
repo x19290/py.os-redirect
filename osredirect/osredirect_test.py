@@ -1,10 +1,8 @@
-from . import redirect, STDERR_BIT, STDERR, STDOUT, STDOUT_BIT
+from . import redirect, STDIN, STDERR_BIT, STDERR, STDOUT, STDOUT_BIT
 from io import BytesIO, StringIO
-from os import write
+from os import close, dup2, fork, pipe, read, wait, write, _exit
 from nose.tools import eq_
 from unittest import TestCase
-
-_BOTH = STDOUT_BIT | STDERR_BIT
 
 
 class _Test:
@@ -97,3 +95,59 @@ class T1str1w2(_1str, _1w2, TestCase):
 
 class T1str2w1w2(_1str, _2w1w2, TestCase):
     pass
+
+
+class T2with_stdin(TestCase):
+    def _typical(self, bit, fd):
+        feed = br"abc"
+        expected = feed.upper()
+        stdin = feed,
+        with BytesIO() as b:
+            with redirect(bit, b, stdin=stdin) as iswriter:
+                if iswriter:
+                    data = read(STDIN, feed.__len__())
+                    write(fd, data.upper())
+            actual = b.getvalue()
+        eq_(expected, actual)
+
+    def test0capture_stdout(self):
+        self._typical(STDOUT_BIT, STDOUT)
+ 
+    def test1capture_stderr(self):
+        self._typical(STDERR_BIT, STDERR)
+ 
+    def test2stdin_only(self):
+        r, w = pipe()
+        feed = br"abc"
+        stdin = feed,
+        expected = feed.upper()
+        if fork() == 0:
+            dup2(w, STDOUT)
+            close(r)
+            close(w)
+            with redirect(0, stdin=stdin) as iswriter:
+                if iswriter:
+                    data = read(STDIN, feed.__len__())
+                    write(STDOUT, data.upper())
+            _exit(0)
+        close(w)
+        actual = read(r, feed.__len__())
+        eq_(expected, actual)
+
+
+    def test3capture_both(self):
+        feed = br"1a 2b"
+        feed1, feed2 = feed.split()
+        expected = feed.upper()
+        stdin = feed,
+        with BytesIO() as stdout, BytesIO() as stderr:
+            fdbits = STDOUT_BIT | STDERR_BIT
+            with redirect(fdbits, stdout, stderr, stdin=stdin) as iswriter:
+                if iswriter:
+                    data = read(STDIN, feed1.__len__())
+                    write(STDOUT, data.upper())
+                    write(STDERR, feed2.upper())
+            actual = br'%s %s' % (stdout.getvalue(), stderr.getvalue())
+        eq_(expected, actual)
+       
+               
