@@ -76,13 +76,15 @@ class Redirect(dict):
                 close(r0)
                 # }
                 # {F
-                for y, (r, w) in self.items():
+                for y in sorted(self.keys()):
+                    r, w = self[y]
                     if y != STDIN:
                         close(w)
                         yield r
                 # }
             else:
-                for y, (r, w) in self.items():
+                for y in sorted(self.keys()):
+                    r, w = self[y]
                     yield r
                     close(w)
 

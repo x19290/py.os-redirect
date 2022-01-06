@@ -28,11 +28,12 @@ class ConcurrentReader(ThreadTuple):
                 oobj.write(adapt(water))
 
         if stdin:
-            from os import write
+            from os import close, write
             w = fds.__next__()
             def feed():
                 for data in stdin:
                     write(w, data)
+                close(w)
             yield Thread(target=feed)
 
         for fd, oobj in zip(fds, oobjs):
