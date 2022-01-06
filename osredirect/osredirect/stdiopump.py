@@ -13,32 +13,40 @@ class StdioPump(ThreadTuple):
         try:
             oobjs[0].write(r'')
         except TypeError:
-            def frombin(b):
+            def adapt(b):
                 return b
-            def fromstr(s):
-                # from ..xcodecs.utf8 import utf8encode
-                # return utf8encode(s)
-                return s
         else:
-            def frombin(b):
+            def adapt(b):
                 from ..xcodecs.utf8 import utf8decode
                 return utf8decode(b)
-            def fromstr(s):
-                return s
 
         def doread(fd, oobj):
             while True:
-                water = read(fd, DEFAULT_BUFFER_SIZE)
-                if not water:
+                bits = read(fd, DEFAULT_BUFFER_SIZE)
+                if not bits:
                     break
-                oobj.write(frombin(water))
+                oobj.write(adapt(bits))
 
         if stdin:
             from os import close, write
             w = fds.__next__()
-            def dowrite():
-                for water in stdin:
-                    write(w, fromstr(water))
+            def dowrite(stdin=stdin):
+                from ..xcodecs.utf8 import utf8encode as adapt
+                stdin = stdin.__iter__()
+                try:
+                    chunk = stdin.__next__()
+                except StopIteration:
+                    pass
+                else:
+                    try:
+                        bits = adapt(chunk)
+                    except TypeError:
+                        bits = chunk
+                        def adapt(b):
+                            return b
+                    write(w, bits)
+                for chunk in stdin:
+                    write(w, adapt(chunk))
                 close(w)
             yield Thread(target=dowrite)
 
