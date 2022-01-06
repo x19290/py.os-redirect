@@ -63,7 +63,7 @@ class Redirect(dict):
 
     def __exit__(self, *_, **__):
         from ..thread import ConcurrentReader
-        from os import close, wait, _exit
+        from os import close, wait, _exit, WEXITSTATUS
 
         if self.iswriter:
             _exit(0)
@@ -89,4 +89,6 @@ class Redirect(dict):
                     close(w)
 
         ConcurrentReader(fds(), self.oobjs, stdin=self.stdin).join()
-        wait()
+        status = WEXITSTATUS(wait()[1])
+        if status != 0:
+            raise ValueError(status)
