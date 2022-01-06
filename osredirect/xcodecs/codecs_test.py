@@ -9,7 +9,7 @@ class _Test:
     @classmethod
     def setUpClass(cls):
         cls.bin = _STR.encode(cls.encoding)
-        cls.decode, cls.encode = map(staticmethod, cls.codecs)
+        cls.decode, cls.encode = map(staticmethod, cls.xcodecs)
 
     def test0decode(self):
         expected = _STR
