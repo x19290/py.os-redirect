@@ -1,7 +1,7 @@
-from .ttuple import ThreadTuple
+from ..thread.ttuple import ThreadTuple
 
 
-class ConcurrentReader(ThreadTuple):
+class StdioPump(ThreadTuple):
     @staticmethod
     def threads(fds, oobjs, stdin=None):
         from io import DEFAULT_BUFFER_SIZE

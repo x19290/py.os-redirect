@@ -62,7 +62,7 @@ class Redirect(dict):
         return self
 
     def __exit__(self, *_, **__):
-        from .stdiopump import StdioPump
+        from ..thread import StdioPump
         from os import close, wait, _exit, WEXITSTATUS
 
         if self.iswriter:

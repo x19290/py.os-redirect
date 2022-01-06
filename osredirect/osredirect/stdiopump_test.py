@@ -1,5 +1,6 @@
-from .zz import (
-    ConcurrentReader, ThreadTuple, Thread,
+from .stdiopump import StdioPump
+from ..thread.zz import (
+    ThreadTuple, Thread,
     BytesIO, StringIO,
     close, pipe, write,
     eq_, TestCase,
@@ -32,7 +33,7 @@ class _Test:
 
         a, b = self.a, self.b
         writers = Writers()
-        readers = ConcurrentReader((ar, br), (a, b))
+        readers = StdioPump((ar, br), (a, b))
         writers.join()
         readers.join()
 
