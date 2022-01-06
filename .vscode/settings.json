@@ -12,6 +12,7 @@
         "contextlib",
         "creader",
         "fdbits",
+        "fileobj",
         "isep",
         "iswriter",
         "memio",
@@ -21,7 +22,9 @@
         "oobjs",
         "osep",
         "osredirect",
+        "popen",
         "redirectdemo",
+        "stdiopump",
         "ttuple",
     ],
 }

@@ -5,14 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "redirectdemo.py",
+            "name": "redirectdemo.py (StringIO mode)",
             "type": "python",
             "request": "launch",
             "program": "redirectdemo.py",
             "justMyCode": false,
             "console": "integratedTerminal"
         },
-	{
+        {
+            "name": "redirectdemo.py (BytesIO mode)",
+            "type": "python",
+            "request": "launch",
+            "program": "redirectdemo.py",
+            "justMyCode": false,
+            "console": "integratedTerminal",
+            "args": ["--bin-out"]
+        },
+        {
             "name": "${file}.py",
             "type": "python",
             "request": "launch",

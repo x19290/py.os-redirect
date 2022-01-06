@@ -1,30 +1,26 @@
 # OS Redirect
 
-accurate output (stdout, stderr) redirection
+improved `contextlib.redirect_stdout`, `subprocess.call`
+
+See:
+- [redirectdemo.py](redirectdemo.py)
+- [osredirect.osredirect](osredirect/osredirect/osredirect.py)
+- [osredirect.stdiopump](osredirect/osredirect/stdiopump.py)
 
 ## Description
 
-[osredirect](osredirect/__init__.py) provides an `os` level redirection
-not like `sys` level ones (contextlib.redirect_stdout,...)
+This package provides `os`-level (not `sys`-level) io redirection.
 
-It also is thread-safe.
+There exist `sys`-level io redirection called
+`contextlib.redirect_stdout` and `contextlib.redirect_stderr`.
 
-## Parts
+But:
+- they are not thread-safe
+- they cannot redirect file descriptors
+- they are output-redirection-only
 
-- `redirect()`:  
-  See [redirectdemo.py](redirectdemo.py).
+There exists another `os`-level io redirection called `subprocess.Popen`
 
-- [osredirect.thread](osredirect/thread/__init__.py):  
-  In this package, classes ConcurrentReader, ThreadTuple are.
-
-  `redirect` must watch multiple inputs, but it does not use
-  `select` like facilities that are too platform-specific.
-
-  It uses straightforward threading instead.
-  ConcurrentReader() watches multiple input (`fds`) and pumps them to `oobjs`.
-
-  ThreadTuple is abstracted from ConcurrentReader.
-
-## More docs
-
-- [concern.md](0more-docs/concern.md)
+But:
+- it do not accept fileobj like `StringIO`
+- pipes quickly stuck with it
