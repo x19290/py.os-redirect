@@ -16,7 +16,7 @@ def redirect(fdbits: int, *oobjs, stdin=None):
 
 class Redirect(dict):
     def __init__(self, fdbits: int, *oobjs, stdin=None):
-        from .null.nullio import NULL_OUT
+        from ..null.nullio import NULL_OUT
         from os import pipe
 
         def fds():
@@ -62,7 +62,7 @@ class Redirect(dict):
         return self
 
     def __exit__(self, *_, **__):
-        from .thread import ConcurrentReader
+        from ..thread import ConcurrentReader
         from os import close, wait, _exit
 
         if self.iswriter:
