@@ -17,7 +17,7 @@
         "oobjs",
         "popen",
         "redirectdemo",
-        "stdiopump",
+        "iopump",
         "ttuple",
         "wexitstatus",
     ],
