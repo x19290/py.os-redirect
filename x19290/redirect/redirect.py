@@ -34,22 +34,22 @@ class Redirect(tuple):
                 dup2(r0, 0)
                 # }
                 # {B
-                for fd, redirect in enumerate(self[1:], start=1):
-                    if redirect:
-                        pipe = redirect[0]
+                for fd, route in enumerate(self[1:], start=1):
+                    if route:
+                        pipe = route[0]
                         dup2(pipe[1], fd)
                 # }
                 # {C
-                for fd, redirect in enumerate(self):
-                    if redirect:
-                        pipe = redirect[0]
+                for fd, route in enumerate(self):
+                    if route:
+                        pipe = route[0]
                         close(pipe[0])
                         close(pipe[1])
                 # }
             else:
-                for fd, redirect in enumerate(self):
-                    if redirect:
-                        r, w = redirect[0]
+                for fd, route in enumerate(self):
+                    if route:
+                        r, w = route[0]
                         dup2(w, fd)
                         close(w)
                         close(r)
@@ -72,19 +72,19 @@ class Redirect(tuple):
                 close(r0)
                 # }
                 # {F
-                for redirect in self[1:]:
-                    if redirect is None:
+                for route in self[1:]:
+                    if route is None:
                         continue
-                    pipe, oobj = redirect
+                    pipe, oobj = route
                     r, w = pipe
                     close(w)
                     yield False, r, oobj
                 # }
             else:
-                for redirect in self[1:]:
-                    if redirect is None:
+                for route in self[1:]:
+                    if route is None:
                         continue
-                    pipe, oobj = redirect
+                    pipe, oobj = route
                     r, w = pipe
                     close(w)
                     yield False, r, oobj
