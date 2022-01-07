@@ -1,11 +1,11 @@
-# OS Redirect
+# OS level Redirect (context manager)
 
 improved `contextlib.redirect_stdout`, `subprocess.call`
 
 See:
-- [redirectdemo.py](redirectdemo.py)
-- [osredirect.osredirect](osredirect/osredirect/osredirect.py)
-- [osredirect.stdiopump](osredirect/osredirect/stdiopump.py)
+- [redirect_demo.py](x19290/redirect/redirect_demo.py)
+- [x19290.redirect](x19290/redirect/redirect.py)
+- [StdioPump](x19290/redirect/stdiopump.py)
 
 ## Description
 

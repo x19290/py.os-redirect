@@ -1,5 +1,5 @@
 from .stdiopump import StdioPump
-from .osredirect import (
+from .redirect import (
     redirect, Redirect, STDIN, STDERR_BIT, STDERR, STDOUT, STDOUT_BIT,
 )
 (

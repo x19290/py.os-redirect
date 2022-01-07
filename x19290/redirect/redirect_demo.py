@@ -25,7 +25,11 @@ def _main(argv=None):
     b'AB ab'
     '''
 
-    from osredirect.osredirect import (
+    from pathlib import Path
+    from sys import path as pythonpath
+    pythonpath[:0] = Path(__file__).absolute().parent.parent.parent.__str__(),
+
+    from x19290.redirect import (
         redirect, STDIN, STDOUT_BIT, STDOUT, STDERR_BIT, STDERR,
     )
     from argparse import ArgumentParser
