@@ -1,7 +1,7 @@
 from ..thread.ttuple import ThreadTuple
 
 
-class StdioPump(ThreadTuple):
+class IOPump(ThreadTuple):
     @staticmethod
     def threads(*routes):
         from io import DEFAULT_BUFFER_SIZE

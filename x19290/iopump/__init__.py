@@ -1,2 +1,2 @@
-from .iopump import StdioPump
-StdioPump  # to avoid "not used" warnings
+from .iopump import IOPump
+IOPump  # to avoid "not used" warnings

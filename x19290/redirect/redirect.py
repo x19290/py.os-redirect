@@ -56,7 +56,7 @@ class Redirect(tuple):
         return self
 
     def __exit__(self, *_, **__):
-        from ..iopump import StdioPump
+        from ..iopump import IOPump
         from os import close, wait, _exit, WEXITSTATUS
 
         if self.ischild:
@@ -89,7 +89,7 @@ class Redirect(tuple):
                     close(w)
                     yield False, r, oobj
 
-        StdioPump(*how()).join()
+        IOPump(*how()).join()
         status = WEXITSTATUS(wait()[1])
         if status != 0:
             raise ValueError(status)
