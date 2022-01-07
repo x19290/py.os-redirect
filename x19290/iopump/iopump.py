@@ -24,7 +24,7 @@ class IOPump(ThreadTuple):
                     return b
             else:
                 def adapt(b):
-                    from ..xcodecs.utf8 import utf8decode
+                    from ..codecs.utf8 import utf8decode
                     return utf8decode(b)
 
         def readpump(fd, oobj):
@@ -37,7 +37,7 @@ class IOPump(ThreadTuple):
         for w, stdin in iobjs:
             from os import close, write
             def writepump(stdin=stdin):
-                from ..xcodecs.utf8 import utf8encode as adapt
+                from ..codecs.utf8 import utf8encode as adapt
                 stdin = stdin.__iter__()
                 try:
                     chunk = stdin.__next__()
