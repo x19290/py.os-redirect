@@ -56,7 +56,7 @@ class Redirect(tuple):
         return self
 
     def __exit__(self, *_, **__):
-        from .iopump import StdioPump
+        from ..iopump import StdioPump
         from os import close, wait, _exit, WEXITSTATUS
 
         if self.ischild:
