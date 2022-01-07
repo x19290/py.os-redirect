@@ -29,9 +29,7 @@ def _main(argv=None):
     from sys import path as pythonpath
     pythonpath[:0] = Path(__file__).absolute().parent.parent.parent.__str__(),
 
-    from x19290.redirect import (
-        redirect, STDIN, STDOUT_BIT, STDOUT, STDERR_BIT, STDERR,
-    )
+    from x19290.redirect import redirect, STDIN, STDOUT, STDERR
     from argparse import ArgumentParser
     from os import read, write
     if argv is None:
@@ -55,9 +53,8 @@ def _main(argv=None):
 
     with MemIO() as stdout, MemIO() as stderr:
         stdin = feed,
-        fsbits = STDOUT_BIT | STDERR_BIT
-        with redirect(fsbits, stdout, stderr, stdin=stdin) as iswriter:
-            if iswriter:
+        with redirect(stdin, stdout, stderr) as ischild:
+            if ischild:
                 data = read(STDIN, 8192)
                 write(STDOUT, data.upper())
                 write(STDERR, data.lower())

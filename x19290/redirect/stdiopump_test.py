@@ -33,7 +33,7 @@ class _Test:
 
         a, b = self.a, self.b
         writers = Writers()
-        readers = StdioPump((ar, br), (a, b))
+        readers = StdioPump((False, ar, a), (False, br, b))
         writers.join()
         readers.join()
 

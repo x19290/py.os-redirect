@@ -1,8 +1,5 @@
 from .stdiopump import StdioPump
-from .redirect import (
-    redirect, Redirect, STDIN, STDERR_BIT, STDERR, STDOUT, STDOUT_BIT,
-)
+from .redirect import redirect, Redirect, STDIN, STDERR, STDOUT
 (
-    StdioPump,
-    redirect, Redirect, STDIN, STDERR_BIT, STDERR, STDOUT, STDOUT_BIT,
+    StdioPump, redirect, Redirect, STDIN, STDERR, STDOUT,
 )  # to avoid "not used" warnings

@@ -3,34 +3,37 @@ from ..thread.ttuple import ThreadTuple
 
 class StdioPump(ThreadTuple):
     @staticmethod
-    def threads(fds, oobjs, stdin=None):
+    def threads(*routes):
         from io import DEFAULT_BUFFER_SIZE
         from os import read
         from threading import Thread
 
-        if not oobjs:
-            return
-        try:
-            oobjs[0].write(r'')
-        except TypeError:
-            def adapt(b):
-                return b
-        else:
-            def adapt(b):
-                from ..xcodecs.utf8 import utf8decode
-                return utf8decode(b)
+        i = tuple((fd, ioobj) for iobj, fd, ioobj in routes if iobj)
+        o = tuple((fd, ioobj) for iobj, fd, ioobj in routes if not iobj)
 
-        def doread(fd, oobj):
+        if not o and not i:
+            return
+        if o:
+            try:
+                o[0][1].write(r'')
+            except TypeError:
+                def adapt(b):
+                    return b
+            else:
+                def adapt(b):
+                    from ..xcodecs.utf8 import utf8decode
+                    return utf8decode(b)
+
+        def readpump(fd, oobj):
             while True:
                 bits = read(fd, DEFAULT_BUFFER_SIZE)
                 if not bits:
                     break
                 oobj.write(adapt(bits))
 
-        if stdin:
+        for w, stdin in i:
             from os import close, write
-            w = fds.__next__()
-            def dowrite(stdin=stdin):
+            def writepump(stdin=stdin):
                 from ..xcodecs.utf8 import utf8encode as adapt
                 stdin = stdin.__iter__()
                 try:
@@ -48,7 +51,7 @@ class StdioPump(ThreadTuple):
                 for chunk in stdin:
                     write(w, adapt(chunk))
                 close(w)
-            yield Thread(target=dowrite)
+            yield Thread(target=writepump)
 
-        for fd, oobj in zip(fds, oobjs):
-            yield Thread(target=doread, args=(fd, oobj))
+        for fd, oobj in o:
+            yield Thread(target=readpump, args=(fd, oobj))

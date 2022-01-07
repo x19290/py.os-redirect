@@ -8,7 +8,7 @@
             "name": "redirectdemo.py (StringIO mode)",
             "type": "python",
             "request": "launch",
-            "program": "redirectdemo.py",
+            "program": "x19290/redirect/redirect_demo.py",
             "justMyCode": false,
             "console": "integratedTerminal"
         },
