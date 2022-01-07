@@ -17,8 +17,9 @@ class Redirect(tuple):
         from os import pipe
 
         def contents():
-            for y in stdin, stdout, stderr:
-                yield None if y is None else (pipe(), y)
+            for ioobj in stdin, stdout, stderr:
+                p = pipe() if ioobj else None
+                yield (pipe() if ioobj else None), ioobj
 
         return super().__new__(cls, contents())
 
@@ -27,29 +28,26 @@ class Redirect(tuple):
 
         self.ischild = ischild = fork() == 0
         if ischild:
-            stdin = self[0]
-            if stdin:
-                pipe = stdin[0]
+            pipe, _ = self[0]
+            if pipe:
                 # {A
                 dup2(pipe[0], 0)
                 # }
                 # {B
-                for fd, route in enumerate(self[1:], start=1):
-                    if route:
-                        pipe = route[0]
+                for fd, (pipe, _) in enumerate(self[1:], start=1):
+                    if pipe:
                         dup2(pipe[1], fd)
                 # }
                 # {C
-                for route in self:
-                    if route:
-                        pipe = route[0]
+                for pipe, _ in self:
+                    if pipe:
                         close(pipe[0])
                         close(pipe[1])
                 # }
             else:
-                for fd, route in enumerate(self):
-                    if route:
-                        r, w = route[0]
+                for fd, (pipe, _) in enumerate(self):
+                    if pipe:
+                        r, w = pipe
                         dup2(w, fd)
                         close(w)
                         close(r)
@@ -63,28 +61,25 @@ class Redirect(tuple):
             _exit(0)
 
         def how():
-            stdin = self[0]
-            if stdin:
-                pipe, iobj = stdin
+            pipe, iobj = self[0]
+            if pipe:
                 # {E
                 r0, w0 = pipe
                 yield w0, iobj
                 close(r0)
                 # }
                 # {F
-                for route in self[1:]:
-                    if route is None:
+                for pipe, oobj in self[1:]:
+                    if pipe is None:
                         continue
-                    pipe, oobj = route
                     r, w = pipe
                     close(w)
                     yield r, oobj
                 # }
             else:
-                for route in self[1:]:
-                    if route is None:
+                for pipe, oobj in self[1:]:
+                    if pipe is None:
                         continue
-                    pipe, oobj = route
                     r, w = pipe
                     close(w)
                     yield r, oobj
