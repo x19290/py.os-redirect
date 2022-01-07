@@ -68,7 +68,7 @@ class Redirect(tuple):
                 pipe, iobj = stdin
                 # {E
                 r0, w0 = pipe
-                yield True, w0, iobj
+                yield w0, iobj
                 close(r0)
                 # }
                 # {F
@@ -78,7 +78,7 @@ class Redirect(tuple):
                     pipe, oobj = route
                     r, w = pipe
                     close(w)
-                    yield False, r, oobj
+                    yield r, oobj
                 # }
             else:
                 for route in self[1:]:
@@ -87,7 +87,7 @@ class Redirect(tuple):
                     pipe, oobj = route
                     r, w = pipe
                     close(w)
-                    yield False, r, oobj
+                    yield r, oobj
 
         IOPump(*how()).join()
         status = WEXITSTATUS(wait()[1])
