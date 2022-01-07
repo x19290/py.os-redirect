@@ -14,7 +14,6 @@ def redirect(stdin=None, stdout=None, stderr=None):
 
 class Redirect(tuple):
     def __new__(cls, stdin=None, stdout=None, stderr=None):
-        from ..null.nullio import NULL_OUT
         from os import pipe
 
         def contents():
