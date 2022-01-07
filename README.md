@@ -5,7 +5,7 @@ improved `contextlib.redirect_stdout`, `subprocess.call`
 See:
 - [redirect_demo.py](x19290/redirect/redirect_demo.py)
 - [x19290.redirect](x19290/redirect/redirect.py)
-- [StdioPump](x19290/redirect/iopump.py)
+- [IOPump](x19290/iopump/iopump.py)
 
 ## Description
 
