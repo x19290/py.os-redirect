@@ -8,14 +8,14 @@ class StdioPump(ThreadTuple):
         from os import read
         from threading import Thread
 
-        i = tuple((fd, ioobj) for iobj, fd, ioobj in routes if iobj)
-        o = tuple((fd, ioobj) for iobj, fd, ioobj in routes if not iobj)
+        iobjs = tuple((fd, y) for isiobj, fd, y in routes if isiobj)
+        oobjs = tuple((fd, y) for isiobj, fd, y in routes if not isiobj)
 
-        if not o and not i:
+        if not oobjs and not iobjs:
             return
-        if o:
+        if oobjs:
             try:
-                o[0][1].write(r'')
+                oobjs[0][1].write(r'')
             except TypeError:
                 def adapt(b):
                     return b
@@ -31,7 +31,7 @@ class StdioPump(ThreadTuple):
                     break
                 oobj.write(adapt(bits))
 
-        for w, stdin in i:
+        for w, stdin in iobjs:
             from os import close, write
             def writepump(stdin=stdin):
                 from ..xcodecs.utf8 import utf8encode as adapt
@@ -53,5 +53,5 @@ class StdioPump(ThreadTuple):
                 close(w)
             yield Thread(target=writepump)
 
-        for fd, oobj in o:
+        for fd, oobj in oobjs:
             yield Thread(target=readpump, args=(fd, oobj))

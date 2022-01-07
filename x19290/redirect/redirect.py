@@ -29,9 +29,9 @@ class Redirect(tuple):
         if ischild:
             stdin = self[0]
             if stdin:
-                r0 = stdin[0][0]
+                pipe = stdin[0]
                 # {A
-                dup2(r0, 0)
+                dup2(pipe[0], 0)
                 # }
                 # {B
                 for fd, route in enumerate(self[1:], start=1):
@@ -40,7 +40,7 @@ class Redirect(tuple):
                         dup2(pipe[1], fd)
                 # }
                 # {C
-                for fd, route in enumerate(self):
+                for route in self:
                     if route:
                         pipe = route[0]
                         close(pipe[0])
@@ -62,7 +62,7 @@ class Redirect(tuple):
         if self.ischild:
             _exit(0)
 
-        def routes():
+        def how():
             stdin = self[0]
             if stdin:
                 pipe, iobj = stdin
@@ -89,7 +89,7 @@ class Redirect(tuple):
                     close(w)
                     yield False, r, oobj
 
-        StdioPump(*routes()).join()
+        StdioPump(*how()).join()
         status = WEXITSTATUS(wait()[1])
         if status != 0:
             raise ValueError(status)
