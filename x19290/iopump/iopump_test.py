@@ -1,60 +1,35 @@
 from .iopump import IOPump
-from ..thread.zz import (
-    ThreadTuple, Thread,
-    BytesIO, StringIO,
-    close, pipe, write,
-    eq_, TestCase,
-)
+from ..codecs.utf8 import utf8encode
+from io import BytesIO, StringIO
+from os import close, pipe
+from nose.tools import eq_
+from unittest import TestCase
 
 
-class _Test:
-    @classmethod
-    def setUpClass(cls):
-        io = cls.io
-        cls.a, cls.b = io(), io()
+class T0(TestCase):
+    def _test(self, io, expect):
+        r0, w0 = pipe()
+        try:
+            r1, w1 = pipe()
+            try:
+                feed = r'01234', r'abcde'
+                expected = tuple(expect(y) for y in feed)
+                iobj0, iobj1 = map(tuple, feed)
+                oobj0, oobj1 = io(), io()
+                IOPump(
+                    (True, w0, iobj0), (True, w1, iobj1),
+                    (False, r0, oobj0), (False, r1, oobj1),
+                ).join()
+            finally:
+                close(r1)
+        finally:
+            close(r0)
 
-    def test0(self):
-        times = 32
-        ar, aw = pipe()
-        br, bw = pipe()
-        ab = self.ab
-        getbytes = self.getbytes
-
-        class Writers(ThreadTuple):
-            @staticmethod
-            def threads():
-                def writeloop(ofd, c):
-                    for _ in range(times):
-                        write(ofd, getbytes(c))
-                    close(ofd)
-
-                for ofd, c in zip((aw, bw), ab):
-                    yield Thread(target=writeloop, args=(ofd, c))
-
-        a, b = self.a, self.b
-        writers = Writers()
-        readers = IOPump((False, ar, a), (False, br, b))
-        writers.join()
-        readers.join()
-
-        expected = ab[0:1] * times, ab[1:2] * times
-        actual = a.getvalue(), b.getvalue()
+        actual = oobj0.getvalue(), oobj1.getvalue()
         eq_(expected, actual)
 
+    def test0(self):
+        self._test(BytesIO, utf8encode)
 
-class T0bytes(_Test, TestCase):
-    io = BytesIO
-    ab = br'ab'
-
-    @staticmethod
-    def getbytes(b):
-        return bytes((b,))
-
-
-class T1str(_Test, TestCase):
-    io = StringIO
-    ab = r'ab'
-
-    @staticmethod
-    def getbytes(s):
-        return s.encode(r'UTF-8')
+    def test1(self):
+        self._test(StringIO, lambda y: y)

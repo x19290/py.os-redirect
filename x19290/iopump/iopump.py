@@ -11,14 +11,39 @@ class IOPump(ThreadTuple):
         from os import read
         from threading import Thread
 
-        iobjs = tuple((fd, y) for isiobj, fd, y in routes if isiobj)
-        oobjs = tuple((fd, y) for isiobj, fd, y in routes if not isiobj)
+        wroutes = tuple((fd, y) for writable, fd, y in routes if writable)
+        rroutes = tuple((fd, y) for writable, fd, y in routes if not writable)
 
-        if not oobjs and not iobjs:
-            return
-        if oobjs:
+        def readpump(fd, oobj, adapt):
+            while True:
+                bits = read(fd, DEFAULT_BUFFER_SIZE)
+                if not bits:
+                    break
+                oobj.write(adapt(bits))
+
+        def writepump(fd, iobj):
+            from ..codecs.utf8 import utf8encode as adapt
+            from os import close, write
+
+            iobj = iobj.__iter__()
             try:
-                oobjs[0][1].write(r'')
+                chunk = iobj.__next__()
+            except StopIteration:
+                pass
+            else:
+                try:
+                    chunk = adapt(chunk)
+                except TypeError:
+                    def adapt(b):
+                        return b
+                write(fd, chunk)
+            for chunk in iobj:
+                write(fd, adapt(chunk))
+            close(fd)
+
+        if rroutes:
+            try:
+                rroutes[0][1].write(r'')
             except TypeError:
                 def adapt(b):
                     return b
@@ -26,35 +51,8 @@ class IOPump(ThreadTuple):
                 def adapt(b):
                     from ..codecs.utf8 import utf8decode
                     return utf8decode(b)
+            for fd, oobj in rroutes:
+                yield Thread(target=readpump, args=(fd, oobj, adapt))
 
-        def readpump(fd, oobj):
-            while True:
-                bits = read(fd, DEFAULT_BUFFER_SIZE)
-                if not bits:
-                    break
-                oobj.write(adapt(bits))
-
-        for w, stdin in iobjs:
-            from os import close, write
-            def writepump(stdin=stdin):
-                from ..codecs.utf8 import utf8encode as adapt
-                stdin = stdin.__iter__()
-                try:
-                    chunk = stdin.__next__()
-                except StopIteration:
-                    pass
-                else:
-                    try:
-                        bits = adapt(chunk)
-                    except TypeError:
-                        bits = chunk
-                        def adapt(b):
-                            return b
-                    write(w, bits)
-                for chunk in stdin:
-                    write(w, adapt(chunk))
-                close(w)
-            yield Thread(target=writepump)
-
-        for fd, oobj in oobjs:
-            yield Thread(target=readpump, args=(fd, oobj))
+        for fd, iobj in wroutes:
+            yield Thread(target=writepump, args=(fd, iobj))

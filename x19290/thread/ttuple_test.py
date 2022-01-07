@@ -1,14 +1,15 @@
-from .zz import (
-    ThreadTuple, Thread,
-    close, pipe, read, write,
-    eq_, TestCase,
-)
+from . import ThreadTuple
+from os import close, pipe, read, write
+from nose.tools import eq_
+from threading import Thread
+from unittest import TestCase
+
 
 class T0(TestCase):
     def test0(self):
         r, w = pipe()
         actual = []
-        feed = br'abcd'
+        feed = br"abcd"
         expected = list(feed)
 
         class ProdCons(ThreadTuple):
