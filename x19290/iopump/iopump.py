@@ -2,6 +2,9 @@ from ..thread.ttuple import ThreadTuple
 
 
 class IOPump(ThreadTuple):
+    r'''
+    an alternative to `select`, `selectors`
+    '''
     @staticmethod
     def threads(*routes):
         from io import DEFAULT_BUFFER_SIZE
