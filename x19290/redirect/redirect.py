@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-import os
 
 STDIN, STDOUT, STDERR = range(3)
 
