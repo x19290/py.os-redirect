@@ -11,25 +11,25 @@ class IOPump(ThreadTuple):
         from os import read
         from threading import Thread
 
-        def readable(fd):
-            try:
-                read(fd, 0)
-            except:
-                return False
-            else:
-                return True
-
-        wroutes = tuple((fd, iobj) for fd, iobj in routes if not readable(fd))
-        rroutes = tuple((fd, oobj) for fd, oobj in routes if readable(fd))
-
-        def readpump(fd, oobj, adapt):
+        def defaultreader(fd, oobj):
+            from ..codecs.utf8 import utf8decode as adapt
+            while True:
+                bits = read(fd, DEFAULT_BUFFER_SIZE)
+                if not bits:
+                    break
+                try:
+                    oobj.write(adapt(bits))
+                except TypeError:
+                    def adapt(b):
+                        return b
+                    oobj.write(adapt(bits))
             while True:
                 bits = read(fd, DEFAULT_BUFFER_SIZE)
                 if not bits:
                     break
                 oobj.write(adapt(bits))
 
-        def writepump(fd, iobj):
+        def defaultwriter(fd, iobj):
             from ..codecs.utf8 import utf8encode as adapt
             from os import close, write
 
@@ -49,18 +49,16 @@ class IOPump(ThreadTuple):
                 write(fd, adapt(chunk))
             close(fd)
 
-        if rroutes:
+        for route in routes:
             try:
-                rroutes[0][1].write(r'')
-            except TypeError:
-                def adapt(b):
-                    return b
+                fd, _ = route
+            except:
+                yield Thread(target=route)
             else:
-                def adapt(b):
-                    from ..codecs.utf8 import utf8decode
-                    return utf8decode(b)
-            for fd, oobj in rroutes:
-                yield Thread(target=readpump, args=(fd, oobj, adapt))
-
-        for fd, iobj in wroutes:
-            yield Thread(target=writepump, args=(fd, iobj))
+                try:
+                    read(fd, 0)
+                except:
+                    target = defaultwriter
+                else:
+                    target = defaultreader
+                yield Thread(target=target, args=route)
