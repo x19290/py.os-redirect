@@ -18,7 +18,6 @@ class Redirect(tuple):
 
         def contents():
             for ioobj in stdin, stdout, stderr:
-                p = pipe() if ioobj else None
                 yield (pipe() if ioobj else None), ioobj
 
         return super().__new__(cls, contents())
