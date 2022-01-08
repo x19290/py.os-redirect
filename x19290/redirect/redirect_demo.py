@@ -2,26 +2,26 @@
 
 
 def main():
-    print(_main())
+    print(redirect_demo())
 
 
-def _main(argv=None):
+def redirect_demo(argv=None):
     r'''
-    To do the following doctest (>>> _main...), run:
-    `python3 -m doctest redirectdemo.py`
+    To do the following doctest (>>> redirect_demo...), run:
+    `python3 -m doctest redirect_demo.py`
 
     There should be no output.
 
-    >>> _main(r'<>'.split())
+    >>> redirect_demo(r'<>'.split())
     'AB ab'
 
-    >>> _main(r'<> --bin-in'.split())
+    >>> redirect_demo(r'<> --bin-in'.split())
     'AB ab'
 
-    >>> _main(r'<> --bin-out'.split())
+    >>> redirect_demo(r'<> --bin-out'.split())
     b'AB ab'
 
-    >>> _main(r'<> --bin-out --bin-in'.split())
+    >>> redirect_demo(r'<> --bin-out --bin-in'.split())
     b'AB ab'
     '''
 
