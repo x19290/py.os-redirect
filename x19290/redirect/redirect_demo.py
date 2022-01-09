@@ -52,11 +52,12 @@ def redirect_demo(argv=None):
         sep = r' '
 
     # `stdout`, `stderr` can be any writable `fileobj`
-    # Data are auto-decoded by a single decoder: `utf8decode` or `identity`
+    # Data are auto-decoded by a single decoder: `default.decode` or `identity`
     # It means that `BytesIO() as stdout, StringIO() as stderr` is not allowed.
     with MemIO() as stdout, MemIO() as stderr:
         # `stdin` can be anything that yields `str` or `bytes`.
-        # Data are auto-encoded by a single encoder: `utf8encode` or `identity`
+        # Data are auto-encoded by a single encoder:
+        #     `default.encode` or `identity`
         # It means that, stdin = b'~', '~' is not allowed
         stdin = feed,
         with redirect(stdin, stdout, stderr) as ischild:
