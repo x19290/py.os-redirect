@@ -83,7 +83,7 @@ class Redirect(tuple):
                     close(w)
                     yield r, oobj
 
-        IOPump(*how()).join()
+        IOPump(*how()).start().join()
         status = WEXITSTATUS(wait()[1])
         if status != 0:
             raise ValueError(status)
