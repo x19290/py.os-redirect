@@ -5,9 +5,9 @@ context managers
 improved `contextlib.redirect_stdout`, `subprocess.call`
 
 See:
-- [redirect_demo.py](x19290/redirect/redirect_demo.py)
-- [x19290.redirect](x19290/redirect/redirect.py)
-- [IOPump](x19290/iopump/iopump.py)
+- [redirect_demo.py](../x19290/redirect/redirect_demo.py)
+- [x19290.redirect](../x19290/redirect/redirect.py)
+- [IOPump](../x19290/iopump/iopump.py)
 
 ## Description
 
