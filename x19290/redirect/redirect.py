@@ -13,6 +13,7 @@ def redirect(stdin=None, stdout=None, stderr=None):
 
 
 class Redirect(tuple):
+    # self[i] == (pipe(), ioobj) or (None, None)
     def __new__(cls, stdin=None, stdout=None, stderr=None):
         from os import pipe
 
@@ -27,22 +28,19 @@ class Redirect(tuple):
 
         self.ischild = ischild = fork() == 0
         if ischild:
+            # redirect STDIN, STDOUT, STDERR to pipes contained in self
             pipe, _ = self[0]
             if pipe:
-                # {A
-                dup2(pipe[0], 0)
-                # }
-                # {B
+                r = pipe[0]
+                dup2(r, 0)
                 for fd, (pipe, _) in enumerate(self[1:], start=1):
                     if pipe:
-                        dup2(pipe[1], fd)
-                # }
-                # {C
+                        w = pipe[1]
+                        dup2(w, fd)
                 for pipe, _ in self:
                     if pipe:
                         close(pipe[0])
                         close(pipe[1])
-                # }
             else:
                 for fd, (pipe, _) in enumerate(self):
                     if pipe:
@@ -60,23 +58,20 @@ class Redirect(tuple):
             _exit(0)
 
         def how():
-            pipe, iobj = self[0]
+            pipe, iobj = self[0]  # first, check self[0]
             if pipe:
-                # {E
                 r0, w0 = pipe
                 yield w0, iobj
                 close(r0)
-                # }
-                # {F
-                for pipe, oobj in self[1:]:
+                for pipe, oobj in self[1:]:  # next, check self[1:]
                     if pipe is None:
                         continue
                     r, w = pipe
                     close(w)
                     yield r, oobj
-                # }
             else:
-                for pipe, oobj in self[1:]:
+                # self[0] == (None, None), check self[1:]
+                for pipe, oobj in self[1:]:  #  self[0] is None
                     if pipe is None:
                         continue
                     r, w = pipe

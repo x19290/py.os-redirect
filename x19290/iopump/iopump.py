@@ -12,15 +12,22 @@ class IOPump(ThreadTuple):
         from threading import Thread
 
         def defaultreader(fd, oobj):
-            from ..codecs.default import decode as adapt
+            from ..codecs.default import decode
+            adapt = decode
             while True:
+                # normal binary read loop
+                # copy data from fd to oobj
+                # oobj may be text mode
                 bits = read(fd, DEFAULT_BUFFER_SIZE)
                 if not bits:
                     break
                 try:
+                    # text mode?
                     oobj.write(adapt(bits))
                 except TypeError:
-                    from ..nop.identity import strictidentity as adapt
+                    # binary mode!
+                    from ..nop.identity import strictidentity
+                    adapt = strictidentity
                     oobj.write(adapt(bits))
             while True:
                 bits = read(fd, DEFAULT_BUFFER_SIZE)
@@ -29,7 +36,8 @@ class IOPump(ThreadTuple):
                 oobj.write(adapt(bits))
 
         def defaultwriter(fd, iobj):
-            from ..codecs.default import encode as adapt
+            from ..codecs.default import encode
+            adapt = encode
             from os import close, write
 
             iobj = iobj.__iter__()
@@ -39,9 +47,12 @@ class IOPump(ThreadTuple):
                 pass
             else:
                 try:
+                    # text mode?
                     chunk = adapt(chunk)
                 except TypeError:
-                    from ..nop.identity import strictidentity as adapt
+                    # binary mode!
+                    from ..nop.identity import strictidentity
+                    adapt = strictidentity
                 write(fd, chunk)
             for chunk in iobj:
                 write(fd, adapt(chunk))
@@ -49,14 +60,15 @@ class IOPump(ThreadTuple):
 
         for route in routes:
             try:
-                fd, _ = route
+                fd, _ = route  # check if route == fd, ioobj
             except:
+                # not. route itself is a target thread
                 yield Thread(target=route)
             else:
                 try:
-                    read(fd, 0)
+                    read(fd, 0)  # check fd is readable
                 except:
-                    target = defaultwriter
+                    target = defaultwriter  # select defaultwriter as target
                 else:
-                    target = defaultreader
+                    target = defaultreader  # select defaultreader as target
                 yield Thread(target=target, args=route)
