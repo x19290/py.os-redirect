@@ -32,16 +32,18 @@ class Redirect(tuple):
             pipe, _ = self[0]
             if pipe:
                 r = pipe[0]
-                dup2(r, 0)
+                dup2(r, 0)  # redirect STDIN
+                # for fd in STDOUT, STDIN...
                 for fd, (pipe, _) in enumerate(self[1:], start=1):
                     if pipe:
                         w = pipe[1]
-                        dup2(w, fd)
+                        dup2(w, fd)  # redirect STDOUT/STDERR
                 for pipe, _ in self:
                     if pipe:
+                        # reclaim pips
                         close(pipe[0])
                         close(pipe[1])
-            else:
+            else:  # STDOUT, STDERR only
                 for fd, (pipe, _) in enumerate(self):
                     if pipe:
                         r, w = pipe
